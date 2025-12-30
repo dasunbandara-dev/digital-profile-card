@@ -13,6 +13,7 @@ import {
   FaCode
 } from 'react-icons/fa';
 import { profileData } from '../data/profileData';
+import bgImage from '../assets/IMG_1873.PNG';
 
 const ProfileCard = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -67,7 +68,7 @@ const ProfileCard = () => {
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out"
         style={{ 
-          backgroundImage: `url(${profileData.backgroundImage})`,
+          backgroundImage: `url(${bgImage})`,
           filter: isExpanded 
             ? 'grayscale(0%) brightness(1.0) contrast(1.1)' 
             : 'grayscale(100%) brightness(0.7) contrast(1.2)',
@@ -84,7 +85,7 @@ const ProfileCard = () => {
       */}
       <div 
         className={`
-          absolute left-0 right-0 bottom-0 mx-auto
+          absolute left-4 right-4 bottom-0 mx-auto
           md:max-w-2xl md:right-0 md:left-0 /* Desktop: Centered & wider */
           transition-all duration-700 cubic-bezier(0.4, 0, 0.2, 1)
           glass-panel-navy shadow-[0_-10px_40px_rgba(0,0,0,0.5)]
@@ -143,12 +144,7 @@ const ProfileCard = () => {
              </div>
              
              {/* Swipe Hint */}
-             {!isExpanded && (
-               <div className="absolute right-8 bottom-6 flex flex-col items-center animate-pulse opacity-50">
-                 <FaChevronUp className="text-white text-lg" />
-                 <span className="text-[10px] uppercase tracking-widest text-white/50">Open</span>
-               </div>
-             )}
+
           </div>
         </div>
 
