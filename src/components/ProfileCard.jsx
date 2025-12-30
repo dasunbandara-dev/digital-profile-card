@@ -1,211 +1,201 @@
-import { useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { 
   FaFacebook, 
   FaInstagram, 
-  FaTiktok, 
-  FaYoutube,
+  FaYoutube, 
+  FaTiktok,
   FaEnvelope, 
-  FaPhone, 
-  FaMapMarkerAlt,
-  FaArrowDown
+  FaPhone,
+  FaWhatsapp,
+  FaChevronUp,
+  FaChevronDown,
+  FaGraduationCap,
+  FaCode
 } from 'react-icons/fa';
 import { profileData } from '../data/profileData';
 
 const ProfileCard = () => {
-  const containerRef = useRef(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  // Touch Handling State
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
 
-  // Simple visual effect on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const heroContent = document.getElementById('hero-content');
-      if (heroContent) {
-        // Fade out hero content and move it up slightly as we scroll
-        heroContent.style.opacity = Math.max(0, 1 - scrollY / 300);
-        heroContent.style.transform = `translateY(-${scrollY * 0.5}px) scale(${1 - scrollY * 0.0005})`;
-      }
-    };
+  // Minimum swipe distance
+  const minSwipeDistance = 50;
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const onTouchStart = (e) => {
+    setTouchEnd(null); 
+    setTouchStart(e.targetTouches[0].clientX);
+    setTouchStart(e.targetTouches[0].clientY);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientY);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isUpSwipe = distance > minSwipeDistance;
+    const isDownSwipe = distance < -minSwipeDistance;
+
+    if (isUpSwipe && !isExpanded) {
+      setIsExpanded(true);
+    }
+    
+    if (isDownSwipe && isExpanded) {
+      setIsExpanded(false); 
+    }
+  };
 
   const socialIcons = {
     facebook: FaFacebook,
     instagram: FaInstagram,
+    whatsapp: FaWhatsapp,
     youtube: FaYoutube,
     tiktok: FaTiktok,
   };
 
   return (
-    <div className="relative w-full min-h-[200vh] bg-black selection:bg-blue-500/30">
+    <div className={`relative w-full h-screen overflow-hidden bg-[#0F172A] text-white font-sans transition-all duration-1000 ${isExpanded ? 'bg-navy-900' : 'bg-black'}`}>
       
-      {/* 1. FIXED BACKGROUND LAYER */}
-      <div className="fixed inset-0 z-0">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 scale-105"
-          style={{ backgroundImage: `url(${profileData.backgroundImage})` }}
-        />
-        {/* Cinematic Dark Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/30" />
-      </div>
+      {/* 
+        1. BACKGROUND IMAGE 
+      */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out"
+        style={{ 
+          backgroundImage: `url(${profileData.backgroundImage})`,
+          filter: isExpanded 
+            ? 'grayscale(0%) brightness(1.0) contrast(1.1)' 
+            : 'grayscale(100%) brightness(0.7) contrast(1.2)',
+          transform: isExpanded ? 'scale(1.05)' : 'scale(1)'
+        }}
+      />
+      
+      {/* Overlay */}
+      <div className={`absolute inset-0 transition-opacity duration-1000 ${isExpanded ? 'bg-[#0F172A]/40' : 'bg-black/20'}`} />
 
-      {/* 2. HERO SECTION (Sticky/Fixed Visual) */}
-      <div className="fixed inset-0 z-10 flex flex-col justify-end pb-32 md:pb-24 pointer-events-none">
-         <div id="hero-content" className="container mx-auto px-6 text-center transition-transform duration-100 ease-out will-change-transform">
-            
-            {/* 3D Floating Name Card */}
-            <div className="apple-glass-card inline-block p-8 md:p-10 mb-6 backdrop-blur-2xl rounded-[40px] pointer-events-auto transform transition-transform hover:scale-[1.02] duration-500 cursor-default shadow-2xl ring-1 ring-white/10">
-              <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter mb-2 hero-text-shadow">
-                {profileData.name.split(' ')[0]} 
-                <span className="text-white/60 font-light ml-3">{profileData.name.split(' ')[1]}</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-blue-200/80 font-medium tracking-wide">
-                {profileData.username}
-              </p>
-            </div>
+      {/* 
+        2. EXPANDABLE GLASS PANEL 
+        - Swipe handlers attached here
+      */}
+      <div 
+        className={`
+          absolute left-0 right-0 bottom-0 
+          transition-all duration-700 cubic-bezier(0.4, 0, 0.2, 1)
+          glass-panel-navy shadow-[0_-10px_40px_rgba(0,0,0,0.5)]
+          flex flex-col
+          ${isExpanded ? 'h-[92vh] rounded-t-[40px]' : 'h-[35vh] md:h-[30vh] rounded-t-[30px]'}
+        `}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
+        
+        {/* DRAG HANDLE AREA - Visual Cue for Swipe */}
+        <div className="w-full flex justify-center pt-3 pb-1 cursor-grab active:cursor-grabbing">
+           <div className="w-16 h-1.5 bg-white/30 rounded-full shadow-sm" />
+        </div>
 
-            <p className="max-w-xl mx-auto text-lg text-gray-300 font-light leading-relaxed drop-shadow-md">
-              {profileData.bio}
-            </p>
+        {/* HEADER AREA - Always Visible */}
+        <div className="px-8 pt-6 pb-2 flex-shrink-0 relative z-20 group text-left">
+          <div className="flex flex-col gap-2">
+             {/* Name & Title */}
+             <div className="mb-2">
+               <h1 className="text-5xl md:text-6xl font-[800] text-white leading-[0.9] tracking-tight font-outfit">
+                 <span className="block">Dasun</span>
+                 <span className="block">Bandara</span>
+               </h1>
+               <p className="text-blue-200 font-bold uppercase tracking-widest text-sm mt-3">
+                 Entrepreneur
+               </p>
+             </div>
 
-            {/* Scroll Hint */}
-            <div className="mt-12 animate-bounce opacity-60">
-              <FaArrowDown className="mx-auto text-white text-xl" />
-            </div>
-         </div>
-      </div>
-
-      {/* 3. SCROLLING CONTENT LAYER (The Overlapping Sheet) */}
-      {/* Spacer to push content down */}
-      <div className="h-[80vh]"></div>
-
-      {/* The Glass Sheet */}
-      <div className="relative z-20 w-full min-h-screen bg-transparent">
-        <div className="apple-sheet-container min-h-screen rounded-t-[50px] md:rounded-t-[80px] p-6 md:p-12 pb-24 shadow-[0_-20px_60px_rgba(0,0,0,0.8)] border-t border-white/15">
-          
-          {/* Handle Indicator (iOS style) */}
-          <div className="w-16 h-1.5 bg-white/20 rounded-full mx-auto mb-12"></div>
-
-          <div className="max-w-3xl mx-auto space-y-16">
-            
-            {/* Contact Grid - Futuristic Cards */}
-            <section className="animate-slideUp">
-              <h3 className="text-sm font-semibold text-white/40 uppercase tracking-[0.3em] mb-8 ml-2">Connect</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 
-                 {/* Email Card */}
-                 <a href={`mailto:${profileData.email}`} className="group apple-action-card">
-                   <div className="icon-circle bg-blue-500/20 text-blue-400 group-hover:bg-blue-500 group-hover:text-white">
-                     <FaEnvelope />
-                   </div>
-                   <div className="flex-1 min-w-0">
-                     <span className="block text-xs text-white/40 uppercase tracking-wider">Email</span>
-                     <span className="block text-white font-medium truncate">{profileData.email}</span>
-                   </div>
-                 </a>
-
-                 {/* Phone Card */}
-                 {profileData.phone && (
-                   <a href={`tel:${profileData.phone}`} className="group apple-action-card">
-                     <div className="icon-circle bg-green-500/20 text-green-400 group-hover:bg-green-500 group-hover:text-white">
-                       <FaPhone />
-                     </div>
-                     <div className="flex-1 min-w-0">
-                       <span className="block text-xs text-white/40 uppercase tracking-wider">Mobile</span>
-                       <span className="block text-white font-medium">{profileData.phone}</span>
-                     </div>
-                   </a>
-                 )}
-
-                 {/* Phone 2 Card */}
-                 {profileData.phone2 && (
-                   <a href={`tel:${profileData.phone2}`} className="group apple-action-card">
-                     <div className="icon-circle bg-green-500/20 text-green-400 group-hover:bg-green-500 group-hover:text-white">
-                       <FaPhone />
-                     </div>
-                     <div className="flex-1 min-w-0">
-                       <span className="block text-xs text-white/40 uppercase tracking-wider">Secondary</span>
-                       <span className="block text-white font-medium">{profileData.phone2}</span>
-                     </div>
-                   </a>
-                 )}
-
-                 {/* Location Card */}
-                 <div className="apple-action-card">
-                   <div className="icon-circle bg-purple-500/20 text-purple-400">
-                     <FaMapMarkerAlt />
-                   </div>
-                   <div className="flex-1">
-                     <span className="block text-xs text-white/40 uppercase tracking-wider">Location</span>
-                     <span className="block text-white font-medium">{profileData.location}</span>
-                   </div>
-                 </div>
-
-              </div>
-            </section>
-
-            {/* Simple CV Data - Experience & Education combined */}
-            <section>
-              <h3 className="text-sm font-semibold text-white/40 uppercase tracking-[0.3em] mb-8 ml-2">Background</h3>
-              <div className="apple-glass-panel space-y-px overflow-hidden rounded-3xl">
-                
-                {/* Education Items */}
-                {profileData.education && profileData.education.map((edu, i) => (
-                  <div key={`edu-${i}`} className="bg-white/5 p-6 hover:bg-white/10 transition-colors">
-                    <div className="flex justify-between items-start mb-1">
-                       <h4 className="text-lg font-semibold text-white">{edu.degree}</h4>
-                       <span className="text-xs font-mono text-white/50 px-2 py-1 bg-white/5 rounded-md">{edu.year}</span>
-                    </div>
-                    <p className="text-blue-200/70 text-sm">{edu.institution}</p>
-                  </div>
-                ))}
-
-                {/* Experience Items */}
-                {profileData.experience && profileData.experience.slice(0, 3).map((exp, i) => (
-                   <div key={`exp-${i}`} className="bg-white/5 p-6 hover:bg-white/10 transition-colors">
-                    <div className="flex justify-between items-start mb-1">
-                       <h4 className="text-lg font-semibold text-white">{exp.position}</h4>
-                       <span className="text-xs font-mono text-white/50 px-2 py-1 bg-white/5 rounded-md">{exp.period}</span>
-                    </div>
-                    <p className="text-blue-200/70 text-sm mb-2">{exp.company}</p>
-                    <p className="text-gray-400 text-sm leading-relaxed text-justify">{exp.description}</p>
-                  </div>
-                ))}
-              
-              </div>
-            </section>
-
-            {/* Social Links Row */}
-            <section className="pb-12">
-               <h3 className="text-sm font-semibold text-white/40 uppercase tracking-[0.3em] mb-8 ml-2 text-center md:text-left">Socials</h3>
-               <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                  {Object.entries(profileData.social).map(([platform, url]) => {
-                    const Icon = socialIcons[platform];
-                    if (!url || !Icon) return null;
-                    return (
-                      <a 
-                        key={platform} 
-                        href={url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white text-2xl
-                                 hover:bg-white/20 hover:scale-110 hover:-rotate-3 transition-all duration-300 shadow-xl"
-                      >
-                        <Icon />
-                      </a>
-                    );
-                  })}
+             {/* Social Icons - Moved to Top & Monochrome */}
+             <div className="flex items-center gap-4 mt-1">
+                {/* Facebook */}
+                <a href={profileData.social.facebook} target="_blank" rel="noopener noreferrer" className="bg-white/10 p-2 rounded-full hover:scale-110 transition-transform">
+                  <FaFacebook className="text-2xl text-white/90" />
+                </a>
+                {/* WhatsApp */}
+                <a href={profileData.social.whatsapp} target="_blank" rel="noopener noreferrer" className="bg-white/10 p-2 rounded-full hover:scale-110 transition-transform">
+                  <FaWhatsapp className="text-2xl text-white/90" />
+                </a>
+                {/* YouTube */}
+                <a href={profileData.social.youtube} target="_blank" rel="noopener noreferrer" className="bg-white/10 p-2 rounded-full hover:scale-110 transition-transform">
+                  <FaYoutube className="text-2xl text-white/90" />
+                </a>
+                {/* TikTok */}
+                <a href={profileData.social.tiktok} target="_blank" rel="noopener noreferrer" className="bg-white/10 p-2 rounded-full hover:scale-110 transition-transform">
+                  <FaTiktok className="text-2xl text-white/90" />
+                </a>
+                {/* Email */}
+                <a href={`mailto:${profileData.email}`} className="bg-white/10 p-2 rounded-full hover:scale-110 transition-transform">
+                  <FaEnvelope className="text-2xl text-white/90" />
+                </a>
+             </div>
+             
+             {/* Swipe Hint */}
+             {!isExpanded && (
+               <div className="absolute right-8 bottom-6 flex flex-col items-center animate-pulse opacity-50">
+                 <FaChevronUp className="text-white text-lg" />
+                 <span className="text-[10px] uppercase tracking-widest text-white/50">Open</span>
                </div>
-            </section>
-
-            {/* Footer */}
-            <div className="text-center pt-12 text-white/20 text-xs tracking-widest uppercase">
-              Profile • {new Date().getFullYear()}
-            </div>
-
+             )}
           </div>
         </div>
+
+        {/* 
+          HIDDEN CONTENT - SCROLLABLE 
+          Only visible when expanded
+        */}
+        <div className={`
+           flex-grow px-8 pb-8 overflow-y-auto no-scrollbar 
+           transition-all duration-500 delay-100
+           ${isExpanded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}
+        `}>
+           
+           <div className="space-y-6 max-w-2xl mx-auto pt-4">
+              
+              {/* COMPACT BIO */}
+              <p className="text-base md:text-lg text-blue-50/80 leading-relaxed font-light border-l-2 border-blue-500/30 pl-4">
+                 {profileData.bio}
+              </p>
+
+              {/* COMPACT EDUCATION & TECH */}
+              <div className="space-y-4">
+                 <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-blue-400/70">Education & Tech</h3>
+
+                 <div className="grid gap-3">
+                   {profileData.education && profileData.education.map((edu, idx) => (
+                     <div key={idx} className="bg-navy-800/40 p-3 rounded-lg border border-white/5 flex justify-between items-center hover:bg-navy-800/60 transition-colors">
+                        <div>
+                           <h4 className="font-semibold text-white text-sm">{edu.degree}</h4>
+                           <p className="text-blue-200/60 text-xs">{edu.institution}</p>
+                        </div>
+                        <span className="text-[10px] font-mono bg-blue-500/10 text-blue-300 px-2 py-0.5 rounded">
+                          {edu.year}
+                        </span>
+                     </div>
+                   ))}
+                 </div>
+                 
+                 {/* Tech Stack Pills - Compact */}
+                 <div className="flex flex-wrap gap-1.5">
+                    {["Business Strategy", "Content Creation", "Social Media", "Tech Innovation"].map((skill) => (
+                      <span key={skill} className="px-2.5 py-1 bg-white/5 text-blue-100/80 text-[10px] uppercase font-bold tracking-wide rounded-md border border-white/5">
+                        {skill}
+                      </span>
+                    ))}
+                 </div>
+              </div>
+
+           </div>
+        </div>
+
       </div>
 
     </div>

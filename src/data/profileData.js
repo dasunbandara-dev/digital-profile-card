@@ -1,7 +1,7 @@
-// Enhanced profile data with social profile style
 export const profileData = {
   // Profile Info
-  name: "Dasun Danushka Bandara",
+  name: "Dasun Bandara",
+  title: "Entrepreneur",
   username: "@dassa_technic",
   bio: "Tech enthusiast creating engaging content about technology and innovation. Sharing knowledge and helping people solve technical challenges through creative storytelling.",
   
@@ -25,6 +25,7 @@ export const profileData = {
   // Social Media
   social: {
     facebook: "https://www.facebook.com/share/16b8uiETKH/",
+    whatsapp: "https://wa.me/94760034519",
     youtube: "https://youtube.com/@dassa_technic?si=irTmzgUfvROCFlHv",
     tiktok: "https://www.tiktok.com/@dassa_technic?_r=1&_t=ZS-92dCsrFDraK",
     instagram: "",
@@ -54,12 +55,43 @@ export const profileData = {
     }
   ],
   
+  // Education
+  education: [
+    {
+      degree: "BSc in Information Technology",
+      institution: "SLIIT (Sri Lanka Institute of Information Technology)",
+      year: "2020 - 2024"
+    },
+    {
+      degree: "Diploma in Computer Hardware & Networking",
+      institution: "Esoft Metro Campus",
+      year: "2018"
+    }
+  ],
+
+  // Experience
+  experience: [
+    {
+      position: "Founder & Content Creator",
+      company: "Dassa Technic",
+      period: "2020 - Present",
+      description: "Leading a tech-focused content creation platform with 12k+ followers. Specializing in hardware reviews, technical troubleshooting, and educational tech content."
+    },
+    {
+      position: "IT Support Specialist",
+      company: "Freelance",
+      period: "2019 - Present",
+      description: "Providing comprehensive hardware and software support, network configuration, and system optimization for individual and business clients."
+    }
+  ],
+
   // Skills
   skills: [
     "Technical Support",
     "Content Creation",
     "Video Production",
-    "Social Media",
-    "Problem Solving"
+    "Social Media Marketing",
+    "Hardware Troubleshooting",
+    "Network Administration"
   ]
 };
