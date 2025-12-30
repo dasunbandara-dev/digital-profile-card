@@ -88,15 +88,18 @@ const ProfileCard = () => {
           transition-all duration-700 cubic-bezier(0.4, 0, 0.2, 1)
           glass-panel-navy shadow-[0_-10px_40px_rgba(0,0,0,0.5)]
           flex flex-col
-          ${isExpanded ? 'h-[92vh] rounded-t-[40px]' : 'h-[35vh] md:h-[30vh] rounded-t-[30px]'}
+          ${isExpanded ? 'h-[92vh] rounded-t-[40px]' : 'h-[45vh] md:h-[35vh] rounded-t-[30px]'}
         `}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
         
-        {/* DRAG HANDLE AREA - Visual Cue for Swipe */}
-        <div className="w-full flex justify-center pt-3 pb-1 cursor-grab active:cursor-grabbing">
+        {/* DRAG HANDLE AREA - Click to Toggle or Swipe */}
+        <div 
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full flex justify-center pt-3 pb-1 cursor-pointer active:scale-95 transition-transform z-50"
+        >
            <div className="w-16 h-1.5 bg-white/30 rounded-full shadow-sm" />
         </div>
 
