@@ -84,11 +84,12 @@ const ProfileCard = () => {
       */}
       <div 
         className={`
-          absolute left-0 right-0 bottom-0 
+          absolute left-0 right-0 bottom-0 mx-auto
+          md:max-w-2xl md:right-0 md:left-0 /* Desktop: Centered & wider */
           transition-all duration-700 cubic-bezier(0.4, 0, 0.2, 1)
           glass-panel-navy shadow-[0_-10px_40px_rgba(0,0,0,0.5)]
           flex flex-col
-          ${isExpanded ? 'h-[92vh] rounded-t-[40px]' : 'h-[45vh] md:h-[35vh] rounded-t-[30px]'}
+          ${isExpanded ? 'h-[92vh] rounded-t-[40px]' : 'h-[45vh] md:h-[40vh] rounded-t-[30px]'}
         `}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
